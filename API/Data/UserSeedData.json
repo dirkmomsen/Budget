@@ -1,32 +1,42 @@
 [
   {
-    "UserName": "Clara"
+    "UserName": "Clara",
+    "Email":  "clara@test.mail.com"
   },
   {
-    "UserName": "Sophie"
+    "UserName": "Sophie",
+    "Email": "Sophie@test.mail.com"
   },
   {
-    "UserName": "Elnora"
+    "UserName": "Elnora",
+    "Email": "Elnora@test.mail.com"
   },
   {
-    "UserName": "Maura"
+    "UserName": "Maura",
+    "Email": "Maura@test.mail.com"
   },
   {
-    "UserName": "Esmeralda"
+    "UserName": "Esmeralda",
+    "Email": "Esmeralda@test.mail.com"
   },
   {
-    "UserName": "Bell"
+    "UserName": "Bell",
+    "Email": "Bell@test.mail.com"
   },
   {
-    "UserName": "Austin"
+    "UserName": "Austin",
+    "Email": "Austin@test.mail.com"
   },
   {
-    "UserName": "Robles"
+    "UserName": "Robles",
+    "Email": "Robles@test.mail.com"
   },
   {
-    "UserName": "Duran"
+    "UserName": "Duran",
+    "Email": "Duran@test.mail.com"
   },
   {
-    "UserName": "Goff"
+    "UserName": "Goff",
+    "Email": "Goff@test.mail.com"
   }
 ]
