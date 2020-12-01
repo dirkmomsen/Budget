@@ -11,10 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class UsersController : ControllerBase
+    public class UsersController : BaseApiController
     {
         private readonly DataContext _context;
 

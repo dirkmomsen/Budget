@@ -13,9 +13,7 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
@@ -31,7 +29,7 @@ namespace API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+        public async Task<ActionResult<LoggedInUserDto>> Register(RegisterDto registerDto)
         {
             if (await UserExists(registerDto.Username)) return BadRequest("Username is taken");
 
@@ -41,15 +39,19 @@ namespace API.Controllers
 
             if (!result.Succeeded) return BadRequest(result.Errors);
 
-            return new UserDto
+            var roleResult = await _userManager.AddToRoleAsync(user, "User");
+
+            if (!roleResult.Succeeded) return BadRequest(result.Errors);
+
+            return new LoggedInUserDto
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = await _tokenService.CreateToken(user)
             };
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
+        public async Task<ActionResult<LoggedInUserDto>> Login(LoginDto loginDto)
         {
             var user = await _userManager.Users
                 .SingleOrDefaultAsync(u => u.NormalizedUserName == loginDto.Username.ToUpper());
@@ -61,10 +63,10 @@ namespace API.Controllers
 
             if (!result.Succeeded) return Unauthorized();
 
-            return new UserDto
+            return new LoggedInUserDto
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = await _tokenService.CreateToken(user)
             };
         }
 
