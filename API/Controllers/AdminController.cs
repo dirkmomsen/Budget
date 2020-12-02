@@ -1,4 +1,6 @@
 ﻿using API.Entities;
+using API.Extensions;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -11,31 +13,51 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
+    [Authorize(Policy = "RequireAdminRole")]
     public class AdminController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public AdminController(UserManager<AppUser> userManager)
+        public AdminController(UserManager<AppUser> userManager, IMapper mapper)
         {
             _userManager = userManager;
+            _mapper = mapper;
         }
 
-        [Authorize(Policy = "RequireAdminRole")]
-        [HttpGet("users-with-roles")]
+        
+        [HttpGet("users")]
         public async Task<ActionResult> GetUsersWithRoles()
         {
-            var users = _userManager.Users
-                .Include(u => u.UserRoles)
-                .ThenInclude(ur => ur.Role)
-                .OrderBy(u => u.UserName)
-                .Select(u => new
-                {
-                    u.Id,
-                    Username = u.UserName,
-                    Roles = u.UserRoles.Select(r => r.Role.Name).ToList()
-                })
-                .ToListAsync();
+            var users = await _userManager.GetUsersWithRolesAsync(_mapper); 
+            
             return Ok(users);
         }
+
+        [HttpPost("users/{username}")]
+        public async Task<ActionResult> EditRoles(string username, [FromQuery] string roles)
+        {
+            var selectedRoles = roles.Split(",").ToArray();
+
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null) 
+                return NotFound("Could not find user");
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var result = await _userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
+
+            if (!result.Succeeded) 
+                return BadRequest("Falied to add the roles");
+
+            result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
+
+            if (!result.Succeeded) 
+                return BadRequest("Failed to remove old roles");
+
+            return Ok(await _userManager.GetRolesAsync(user));
+        }
+
     }
 }

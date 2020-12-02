@@ -20,6 +20,8 @@ namespace API.Helpers
             CreateMap<RegisterDto, AppUser>();
             CreateMap<LoginDto, AppUser>();
             CreateMap<AppUser, LoggedInUserDto>();
+            CreateMap<AppUser, UserWithRoleDto>()
+                .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.UserRoles.Select(aur => aur.Role.Name)));
         }
     }
 }
