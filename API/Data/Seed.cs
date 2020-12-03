@@ -22,7 +22,6 @@ namespace API.Data
             var roles = new List<AppRole>
             {
                 new AppRole{ Name = "Admin" },
-                new AppRole{ Name = "Moderator" },
                 new AppRole{ Name = "User" }
             };
 
@@ -40,7 +39,8 @@ namespace API.Data
 
             var admin = new AppUser
             {
-                UserName = "admin"
+                UserName = "admin",
+                Email = "admin@test.mail.com"
             };
 
             await userManager.CreateAsync(admin, "Pa$$w0rd");
