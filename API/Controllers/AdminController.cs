@@ -1,4 +1,4 @@
-﻿using API.Entities;
+﻿using API.Entities.Identity;
 using API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;

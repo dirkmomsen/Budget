@@ -1,4 +1,4 @@
-﻿using API.Entities;
+﻿using API.Entities.Identity;
 using API.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;

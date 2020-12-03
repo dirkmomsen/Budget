@@ -1,4 +1,4 @@
-﻿using API.Entities;
+﻿using API.Entities.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
