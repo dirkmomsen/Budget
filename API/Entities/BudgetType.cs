@@ -8,5 +8,6 @@ namespace API.Entities
     public class BudgetType : BaseEntity
     {
         public string Name { get; set; }
+        public string Description { get; set; }
     }
 }
