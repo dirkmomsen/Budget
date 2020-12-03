@@ -46,5 +46,62 @@ namespace API.Data
             await userManager.CreateAsync(admin, "Pa$$w0rd");
             await userManager.AddToRolesAsync(admin, new[] { "Admin" });
         }
+
+        public static async Task SeedBudgetTypes(DataContext context)
+        {
+            await context.BudgetTypes.AddAsync(new()
+            {
+                Name = "Fortnightly",
+                Description = "Budget that will allow you to create fortnightly budgets."
+            });
+
+            await context.BudgetTypes.AddAsync(new()
+            {
+                Name = "Monthly",
+                Description = "Budget that will allow you to create monthly budgets."
+            });
+
+            await context.BudgetTypes.AddAsync(new()
+            {
+                Name = "Yearly",
+                Description = "Budget that will allow you to create yearly budgets."
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        public static async Task SeedItemTypes(DataContext context)
+        {
+            await context.ItemTypes.AddAsync(new()
+            {
+                Name = "YearlyIncome",
+                DisplaySymbol = '+',
+            });
+
+            await context.ItemTypes.AddAsync(new()
+            {
+                Name = "Income",
+                DisplaySymbol = '+',
+            });
+
+            await context.ItemTypes.AddAsync(new()
+            {
+                Name = "PlannedExpense",
+                DisplaySymbol = '-',
+            });
+
+            await context.ItemTypes.AddAsync(new()
+            {
+                Name = "Expense",
+                DisplaySymbol = '-',
+            });
+
+            await context.SaveChangesAsync();
+        }
+
+        public static async Task SeedBudgets(DataContext context, UserManager<AppUser> userManager)
+        {
+            
+        }
     }
 }

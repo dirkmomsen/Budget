@@ -9,5 +9,7 @@ namespace API.Entities
     {
         public string Name { get; set; }
         public char DisplaySymbol { get; set; }
+
+        public ICollection<BudgetItem> Items { get; set; }
     }
 }

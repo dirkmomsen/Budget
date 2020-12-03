@@ -8,9 +8,13 @@ namespace API.Entities
 {
     public class Budget : BaseEntity
     {
-        public List<AppUser> Users { get; set; }
+        public ICollection<AppUser> Users { get; set; }
         public string Name { get; set; }
-        public List<BudgetItems> Items { get; set; }
+
+        public int TypeId { get; set; }
+        public BudgetType Type { get; set; }
+
+        public ICollection<BudgetItem> Items { get; set; }
 
 
     }

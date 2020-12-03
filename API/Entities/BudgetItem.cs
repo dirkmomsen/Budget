@@ -5,9 +5,14 @@ using System.Threading.Tasks;
 
 namespace API.Entities
 {
-    public class BudgetItems : BaseEntity
+    public class BudgetItem : BaseEntity
     {
         public string Description { get; set; }
+
+        public int TypeId { get; set; }
         public ItemType Type { get; set; }
+
+        public int BudgetId { get; set; }
+        public Budget Budget { get; set; }
     }
 }
