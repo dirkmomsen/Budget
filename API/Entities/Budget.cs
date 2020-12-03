@@ -7,5 +7,6 @@ namespace API.Entities
 {
     public class Budget
     {
+        public string Id { get; set; }
     }
 }
