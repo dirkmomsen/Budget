@@ -1,5 +1,5 @@
 ﻿using API.DTOs;
-using API.Entities;
+using API.Entities.Identity;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
