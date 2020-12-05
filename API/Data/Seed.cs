@@ -1,4 +1,5 @@
-﻿using API.Entities.Identity;
+﻿using API.Entities;
+using API.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -87,7 +88,7 @@ namespace API.Data
             await context.ItemTypes.AddAsync(new()
             {
                 Name = "PlannedExpense",
-                DisplaySymbol = '-',
+                DisplaySymbol = '~',
             });
 
             await context.ItemTypes.AddAsync(new()
@@ -101,7 +102,41 @@ namespace API.Data
 
         public static async Task SeedBudgets(DataContext context, UserManager<AppUser> userManager)
         {
-            
+            var budgetTypes = await context.BudgetTypes.ToListAsync();
+            var itemTypes = await context.ItemTypes.ToListAsync();
+            var users = await userManager.Users.ToListAsync();
+
+            var budgetCount = users.Count;
+
+            Random rnd = new Random();
+
+            var budgets = new List<Budget>();
+            for (int i = 0; i < budgetCount; i++)
+            {
+                var randomBudgetType = rnd.Next(0, budgetTypes.Count - 1);
+
+                var items = new List<BudgetItem>();
+                for (int o = 0; o < rnd.Next(1, 10); o++)
+                {
+                    items.Add(new()
+                    {
+                        Type = itemTypes[rnd.Next(0, itemTypes.Count - 1)],
+                        Description = $"Random Item {o}",
+                        Value = Convert.ToDecimal(rnd.NextDouble() * 10000)
+                    });
+                }
+
+                budgets.Add(new()
+                {
+                    Name = $"{budgetTypes[randomBudgetType].Name} {i}",
+                    Type = budgetTypes[randomBudgetType],
+                    Items = items,
+                    Users = new List<AppUser>() { users[i] }
+                });
+            }
+
+            await context.Budgets.AddRangeAsync(budgets);
+            await context.SaveChangesAsync();
         }
     }
 }

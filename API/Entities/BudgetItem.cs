@@ -9,6 +9,8 @@ namespace API.Entities
     {
         public string Description { get; set; }
 
+        public decimal Value { get; set; }
+
         public int TypeId { get; set; }
         public ItemType Type { get; set; }
 
