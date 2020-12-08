@@ -50,6 +50,8 @@ namespace API.Data
 
         public static async Task SeedBudgetTypes(DataContext context)
         {
+            if (await context.BudgetTypes.AnyAsync()) return;
+
             await context.BudgetTypes.AddAsync(new()
             {
                 Name = "Fortnightly",
@@ -73,6 +75,8 @@ namespace API.Data
 
         public static async Task SeedItemTypes(DataContext context)
         {
+            if (await context.ItemTypes.AnyAsync()) return;
+
             await context.ItemTypes.AddAsync(new()
             {
                 Name = "YearlyIncome",
@@ -102,6 +106,8 @@ namespace API.Data
 
         public static async Task SeedBudgets(DataContext context, UserManager<AppUser> userManager)
         {
+            if (await context.Budgets.AnyAsync()) return;
+
             var budgetTypes = await context.BudgetTypes.ToListAsync();
             var itemTypes = await context.ItemTypes.ToListAsync();
             var users = await userManager.Users.ToListAsync();
