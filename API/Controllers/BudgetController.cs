@@ -1,4 +1,5 @@
 ﻿using API.Data;
+using API.DTOs;
 using API.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,14 @@ namespace API.Controllers
     {
         private readonly DataContext _context;
 
+        public int UserId
+        {
+            get {
+                return int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            }
+        }
+
+
         public BudgetController(DataContext context)
         {
             _context = context;
@@ -25,34 +34,48 @@ namespace API.Controllers
 
         // GET: api/<BudgetController>
         [HttpGet]
-        public ActionResult Get()
+        public async Task<ActionResult> Get()
         {
-            return Ok();
+            var budgets = await _context.Budgets
+                .Where(b => b.Users.Any(u => u.Id == UserId))
+                .ToListAsync();
+
+            return Ok(budgets);
         }
 
         // GET api/<BudgetController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult> Get(int id)
         {
-            return "value";
+            var budget = await _context.Budgets
+                .Where(b => b.Users.Any(u => u.Id == UserId))
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (budget == null)
+                return NotFound("Budget not found for this user");
+
+            return Ok(budget);
         }
 
         // POST api/<BudgetController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody] BudgetDto budget)
         {
+
         }
 
         // PUT api/<BudgetController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
+
         }
 
         // DELETE api/<BudgetController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+
         }
     }
 }
