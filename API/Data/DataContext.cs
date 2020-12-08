@@ -47,11 +47,7 @@ namespace API.Data
                         .HasForeignKey(auB => auB.UserId),
                     j =>
                     {
-                        //j.Property(pt => pt.Administrator).HasDefaultValue();
-                        //j.Property(pt => pt.BudgetId).HasColumnName("BudgetId");
-                        //j.Property(pt => pt.UserId).HasColumnName("UserId");
                         j.HasKey(t => new { t.BudgetId, t.UserId });
-                        //j.ToTable("AppUserBudgets");
                     });
 
             builder.Entity<Budget>()
