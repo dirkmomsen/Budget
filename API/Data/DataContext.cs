@@ -36,7 +36,23 @@ namespace API.Data
             builder.Entity<AppUser>()
                 .HasMany(au => au.Budgets)
                 .WithMany(b => b.Users)
-                .UsingEntity(j => j.ToTable("AppUserBudgets"));
+                .UsingEntity<AppUserBudget>(
+                    j => j
+                        .HasOne(auB => auB.Budget)
+                        .WithMany(b => b.UserBudgets)
+                        .HasForeignKey(auB => auB.BudgetId),
+                    j => j
+                        .HasOne(auB => auB.User)
+                        .WithMany(au => au.UserBudgets)
+                        .HasForeignKey(auB => auB.UserId),
+                    j =>
+                    {
+                        //j.Property(pt => pt.Administrator).HasDefaultValue();
+                        //j.Property(pt => pt.BudgetId).HasColumnName("BudgetId");
+                        //j.Property(pt => pt.UserId).HasColumnName("UserId");
+                        j.HasKey(t => new { t.BudgetId, t.UserId });
+                        //j.ToTable("AppUserBudgets");
+                    });
 
             builder.Entity<Budget>()
                 .HasMany(b => b.Items)

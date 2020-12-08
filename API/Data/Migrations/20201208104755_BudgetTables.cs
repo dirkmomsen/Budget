@@ -79,24 +79,25 @@ namespace API.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppUserBudgets",
+                name: "AppUserBudget",
                 columns: table => new
                 {
-                    BudgetsId = table.Column<int>(type: "INTEGER", nullable: false),
-                    UsersId = table.Column<int>(type: "INTEGER", nullable: false)
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    BudgetId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Administrator = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppUserBudgets", x => new { x.BudgetsId, x.UsersId });
+                    table.PrimaryKey("PK_AppUserBudget", x => new { x.BudgetId, x.UserId });
                     table.ForeignKey(
-                        name: "FK_AppUserBudgets_AspNetUsers_UsersId",
-                        column: x => x.UsersId,
+                        name: "FK_AppUserBudget_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AppUserBudgets_Budgets_BudgetsId",
-                        column: x => x.BudgetsId,
+                        name: "FK_AppUserBudget_Budgets_BudgetId",
+                        column: x => x.BudgetId,
                         principalTable: "Budgets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -134,9 +135,9 @@ namespace API.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppUserBudgets_UsersId",
-                table: "AppUserBudgets",
-                column: "UsersId");
+                name: "IX_AppUserBudget_UserId",
+                table: "AppUserBudget",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BudgetItems_BudgetId",
@@ -157,7 +158,7 @@ namespace API.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AppUserBudgets");
+                name: "AppUserBudget");
 
             migrationBuilder.DropTable(
                 name: "BudgetItems");

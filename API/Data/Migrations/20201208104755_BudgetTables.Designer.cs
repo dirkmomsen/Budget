@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20201205053250_BudgetTables")]
+    [Migration("20201208104755_BudgetTables")]
     partial class BudgetTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -17,6 +17,26 @@ namespace API.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.0");
+
+            modelBuilder.Entity("API.Entities.AppUserBudget", b =>
+                {
+                    b.Property<int>("BudgetId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("BudgetId");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("UserId");
+
+                    b.Property<bool>("Administrator")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("BudgetId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AppUserBudget");
+                });
 
             modelBuilder.Entity("API.Entities.Budget", b =>
                 {
@@ -247,21 +267,6 @@ namespace API.Data.Migrations
                     b.ToTable("ItemTypes");
                 });
 
-            modelBuilder.Entity("AppUserBudget", b =>
-                {
-                    b.Property<int>("BudgetsId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("BudgetsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("AppUserBudgets");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -346,6 +351,25 @@ namespace API.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("API.Entities.AppUserBudget", b =>
+                {
+                    b.HasOne("API.Entities.Budget", "Budget")
+                        .WithMany("UserBudgets")
+                        .HasForeignKey("BudgetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.Identity.AppUser", "User")
+                        .WithMany("UserBudgets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Budget");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("API.Entities.Budget", b =>
                 {
                     b.HasOne("API.Entities.BudgetType", "Type")
@@ -395,21 +419,6 @@ namespace API.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AppUserBudget", b =>
-                {
-                    b.HasOne("API.Entities.Budget", null)
-                        .WithMany()
-                        .HasForeignKey("BudgetsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Entities.Identity.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("API.Entities.Identity.AppRole", null)
@@ -449,6 +458,8 @@ namespace API.Data.Migrations
             modelBuilder.Entity("API.Entities.Budget", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("UserBudgets");
                 });
 
             modelBuilder.Entity("API.Entities.BudgetType", b =>
@@ -463,6 +474,8 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Entities.Identity.AppUser", b =>
                 {
+                    b.Navigation("UserBudgets");
+
                     b.Navigation("UserRoles");
                 });
 

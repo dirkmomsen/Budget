@@ -132,14 +132,40 @@ namespace API.Data
                     });
                 }
 
+                AppUserBudget test = new()
+                {
+                    User = users[i],
+                    Administrator = true
+                };
+
                 budgets.Add(new()
                 {
                     Name = $"{budgetTypes[randomBudgetType].Name} {i}",
                     Type = budgetTypes[randomBudgetType],
                     Items = items,
-                    Users = new List<AppUser>() { users[i] }
+                    //Users = new List<AppUser>() { users[i] },
+                    UserBudgets = new List<AppUserBudget>() { test }
                 });
             }
+
+            budgets.Add(new()
+            {
+                Name = $"Second Budget",
+                Type = budgetTypes[2],
+                Items = new List<BudgetItem>(){
+                    new() {
+                        Type = itemTypes[rnd.Next(0, itemTypes.Count - 1)],
+                        Description = $"Extra budget item",
+                        Value = Convert.ToDecimal(rnd.NextDouble() * 10000)
+                    },
+                    new() {
+                        Type = itemTypes[rnd.Next(0, itemTypes.Count - 1)],
+                        Description = $"Second extra budget item",
+                        Value = Convert.ToDecimal(rnd.NextDouble() * 10000)
+                    }
+                },
+                Users = new List<AppUser>() { users[0] }
+            });
 
             await context.Budgets.AddRangeAsync(budgets);
             await context.SaveChangesAsync();

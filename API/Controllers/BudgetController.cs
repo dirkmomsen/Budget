@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entities;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,18 +19,20 @@ namespace API.Controllers
     public class BudgetController : BaseApiController
     {
         private readonly DataContext _context;
+        private readonly IMapper _mapper;
 
         public int UserId
         {
-            get {
+            get
+            {
                 return int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             }
         }
 
-
-        public BudgetController(DataContext context)
+        public BudgetController(DataContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/<BudgetController>
@@ -37,10 +40,12 @@ namespace API.Controllers
         public async Task<ActionResult> Get()
         {
             var budgets = await _context.Budgets
+                .Include(b => b.UserBudgets)
+                .ThenInclude(ub => ub.User)
                 .Where(b => b.Users.Any(u => u.Id == UserId))
                 .ToListAsync();
 
-            return Ok(budgets);
+            return Ok(budgets.Select(_mapper.Map<BudgetDto>));
         }
 
         // GET api/<BudgetController>/5
@@ -48,32 +53,42 @@ namespace API.Controllers
         public async Task<ActionResult> Get(int id)
         {
             var budget = await _context.Budgets
+                .Include(b => b.UserBudgets)
+                .ThenInclude(ub => ub.User)
                 .Where(b => b.Users.Any(u => u.Id == UserId))
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (budget == null)
                 return NotFound("Budget not found for this user");
 
-            return Ok(budget);
+            return Ok(_mapper.Map<BudgetDto>(budget));
         }
 
         // POST api/<BudgetController>
         [HttpPost]
-        public void Post([FromBody] BudgetDto budget)
+        public async Task Post([FromBody] BudgetDto budgetDto)
         {
+            //budgetDto.Users.
+
+            //var budget = _mapper.Map<Budget>(budgetDto);
+            //budget.Us
+
+            //_context.Budgets.Add();
+            //await _context.SaveChangesAsync();
+
 
         }
 
         // PUT api/<BudgetController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task Put(int id, [FromBody] BudgetDto budgetDto)
         {
 
         }
 
         // DELETE api/<BudgetController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
 
         }
