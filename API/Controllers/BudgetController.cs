@@ -37,12 +37,13 @@ namespace API.Controllers
 
         // GET: api/<BudgetController>
         [HttpGet]
-        public async Task<ActionResult> Get()
+        public async Task<IActionResult> Get()
         {
             var budgets = await _context.Budgets
                 .Include(b => b.UserBudgets)
                 .ThenInclude(ub => ub.User)
                 .Where(b => b.Users.Any(u => u.Id == UserId))
+                .Where(b => b.Deleted == false)
                 .ToListAsync();
 
             return Ok(budgets.Select(_mapper.Map<BudgetDto>));
@@ -50,12 +51,13 @@ namespace API.Controllers
 
         // GET api/<BudgetController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var budget = await _context.Budgets
                 .Include(b => b.UserBudgets)
                 .ThenInclude(ub => ub.User)
                 .Where(b => b.Users.Any(u => u.Id == UserId))
+                .Where(b => b.Deleted == false)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (budget == null)
@@ -88,9 +90,30 @@ namespace API.Controllers
 
         // DELETE api/<BudgetController>/5
         [HttpDelete("{id}")]
-        public async Task Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            var budget = await _context.Budgets
+                .Include(x => x.UserBudgets)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
+            if (budget is null) return NotFound();
+
+            var userBudget = budget.UserBudgets
+                .Where(x => x.UserId == UserId)
+                .Where(x => x.Administrator)
+                .ToList();
+
+            if (userBudget.Count <= 0) return Unauthorized();
+
+            budget.Deleted = true;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        private async Task<bool> BudgetExistsAsync(int id)
+        {
+            return await _context.Budgets.AnyAsync(x => x.Id == id);
         }
     }
 }
