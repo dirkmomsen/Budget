@@ -20,15 +20,23 @@ namespace API.Helpers
             //CreateMap<MemberUpdateDto, AppUser>();
             CreateMap<RegisterDto, AppUser>();
             CreateMap<LoginDto, AppUser>();
+
             CreateMap<AppUser, LoggedInUserDto>();
             CreateMap<AppUser, UserWithRoleDto>()
                 .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.UserRoles.Select(aur => aur.Role.Name)));
+
             CreateMap<Budget, BudgetDto>()
                 .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.UserBudgets));
             CreateMap<BudgetDto, Budget>();
+
             CreateMap<AppUserBudget, UserDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
-                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.UserName));
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId));
+            CreateMap<UserDto, AppUserBudget>();
+
+            CreateMap<CreateBudgetDto, Budget>();
+
+            CreateMap<BudgetType, BudgetTypeDto>();
+            CreateMap<BudgetTypeDto, BudgetType>();
         }
     }
 }

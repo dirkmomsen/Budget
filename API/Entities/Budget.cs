@@ -17,6 +17,10 @@ namespace API.Entities
 
         public ICollection<BudgetItem> Items { get; set; }
 
-
+        public Budget()
+        {
+            Users = new List<AppUser>();
+            UserBudgets = new List<AppUserBudget>();
+        }
     }
 }

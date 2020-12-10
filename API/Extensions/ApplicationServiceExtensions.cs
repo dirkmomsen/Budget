@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Interfaces;
 using API.Services;
+using API.Data.Repositories;
 
 namespace API.Extensions
 {
@@ -18,6 +19,8 @@ namespace API.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IBudgetRepository, BudgetRepository>();
+            services.AddScoped<IBudgetTypeRepository, BudgetTypeRepository>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddDbContext<DataContext>(options =>
             {

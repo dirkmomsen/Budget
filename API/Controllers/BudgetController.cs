@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,8 @@ namespace API.Controllers
     [Authorize]
     public class BudgetController : BaseApiController
     {
-        private readonly DataContext _context;
+        private readonly IBudgetRepository _budgetRepository;
+        private readonly IBudgetTypeRepository _budgetTypeRepository;
         private readonly IMapper _mapper;
 
         public int UserId
@@ -29,9 +31,10 @@ namespace API.Controllers
             }
         }
 
-        public BudgetController(DataContext context, IMapper mapper)
+        public BudgetController(IBudgetRepository budgetRepository, IBudgetTypeRepository budgetTypeRepository, IMapper mapper)
         {
-            _context = context;
+            _budgetRepository = budgetRepository;
+            _budgetTypeRepository = budgetTypeRepository;
             _mapper = mapper;
         }
 
@@ -39,81 +42,99 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var budgets = await _context.Budgets
-                .Include(b => b.UserBudgets)
-                .ThenInclude(ub => ub.User)
-                .Where(b => b.Users.Any(u => u.Id == UserId))
-                .Where(b => b.Deleted == false)
-                .ToListAsync();
+            var budgets = await _budgetRepository.GetBudgetsAsync(UserId);
+            var output = budgets.Select(b => _mapper.Map<BudgetDto>(b));
 
-            return Ok(budgets.Select(_mapper.Map<BudgetDto>));
+            return Ok(output);
         }
 
         // GET api/<BudgetController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var budget = await _context.Budgets
-                .Include(b => b.UserBudgets)
-                .ThenInclude(ub => ub.User)
-                .Where(b => b.Users.Any(u => u.Id == UserId))
-                .Where(b => b.Deleted == false)
-                .FirstOrDefaultAsync(b => b.Id == id);
+            var budget = await _budgetRepository.GetBudgetByIdAsync(id, UserId);
 
             if (budget == null)
                 return NotFound("Budget not found for this user");
 
-            return Ok(_mapper.Map<BudgetDto>(budget));
+            var output = _mapper.Map<BudgetDto>(budget);
+
+            return Ok(output);
         }
 
         // POST api/<BudgetController>
         [HttpPost]
-        public async Task Post([FromBody] BudgetDto budgetDto)
+        public async Task<IActionResult> Post([FromBody] CreateBudgetDto budgetDto)
         {
-            //budgetDto.Users.
+            var budgetType = await _budgetTypeRepository.GetBudgetTypeByIdAsync(budgetDto.TypeId);
 
-            //var budget = _mapper.Map<Budget>(budgetDto);
-            //budget.Us
+            if (budgetType is null)
+                return BadRequest("Invalid budget type");
 
-            //_context.Budgets.Add();
-            //await _context.SaveChangesAsync();
+            var budget = _mapper.Map<Budget>(budgetDto);
 
+            budget.UserBudgets.Add(new()
+            {
+                UserId = UserId,
+                Administrator = true
+            });
+
+            _budgetRepository.AddBudget(budget);
+            var saved = await _budgetRepository.SaveAllAsync();
+
+            if (saved is false) return BadRequest("Failed to save budget");
+
+            var output = _mapper.Map<BudgetDto>(budget);
+
+            return Created($"budget/{budget.Id}", output);
 
         }
 
         // PUT api/<BudgetController>/5
         [HttpPut("{id}")]
-        public async Task Put(int id, [FromBody] BudgetDto budgetDto)
+        public async Task<IActionResult> Put(int id, [FromBody] CreateBudgetDto budgetDto)
         {
+            var budgetType = await _budgetTypeRepository.GetBudgetTypeByIdAsync(budgetDto.TypeId);
 
+            if (budgetType is null)
+                return BadRequest("Invalid budget type");
+
+            var budget = await _budgetRepository.GetBudgetByIdAsync(id, UserId);
+
+            if (budget is null) return NotFound();
+
+            budget.Name = budgetDto.Name;
+            budget.TypeId = budgetDto.TypeId;
+
+            _budgetRepository.UpdateBudget(budget);
+            var saved = await _budgetRepository.SaveAllAsync();
+
+            if (saved is false) return BadRequest("Failed to save budget");
+
+            var output = _mapper.Map<BudgetDto>(budget);
+
+            return Ok(output);
         }
 
         // DELETE api/<BudgetController>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var budget = await _context.Budgets
-                .Include(x => x.UserBudgets)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var budget = await _budgetRepository.GetBudgetByIdAsync(id, UserId);
 
             if (budget is null) return NotFound();
 
-            var userBudget = budget.UserBudgets
-                .Where(x => x.UserId == UserId)
+            var adminUserBudgets = budget.UserBudgets
                 .Where(x => x.Administrator)
                 .ToList();
 
-            if (userBudget.Count <= 0) return Unauthorized();
+            if (adminUserBudgets.Count <= 0) return Unauthorized();
 
-            budget.Deleted = true;
-            await _context.SaveChangesAsync();
+            _budgetRepository.DeleteBudget(budget);
 
-            return Ok();
-        }
+            var saved = await _budgetRepository.SaveAllAsync();
 
-        private async Task<bool> BudgetExistsAsync(int id)
-        {
-            return await _context.Budgets.AnyAsync(x => x.Id == id);
+            return NoContent();
         }
     }
 }

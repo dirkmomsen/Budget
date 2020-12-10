@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace API.DTOs
 {
-    public class UserDto
+    public class BudgetTypeDto
     {
         public int Id { get; set; }
-        public bool Administrator { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
     }
 }
