@@ -34,19 +34,26 @@ namespace API.Data
 
             foreach (var user in users)
             {
-                user.UserName = user.UserName.ToLower();
                 await userManager.CreateAsync(user, "Pa$$w0rd");
                 await userManager.AddToRoleAsync(user, Role.User);
             }
 
             var admin = new AppUser
             {
-                UserName = "admin",
+                UserName = "administrator",
                 Email = "admin@test.mail.com"
             };
 
             await userManager.CreateAsync(admin, "Pa$$w0rd");
             await userManager.AddToRolesAsync(admin, new[] { Role.Administrator });
+
+            var noRole = new AppUser
+            {
+                UserName = "NoRoleUser",
+                Email = "noRoles@test.mail.com"
+            };
+
+            await userManager.CreateAsync(noRole, "Pa$$w0rd");
         }
 
         public static async Task SeedBudgetTypes(DataContext context)

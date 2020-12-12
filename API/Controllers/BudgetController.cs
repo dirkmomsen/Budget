@@ -41,7 +41,6 @@ namespace API.Controllers
 
         // GET: api/<BudgetController>
         [HttpGet]
-        [Authorize(Policy = Policy.RequireUserRole)]
         public async Task<IActionResult> Get()
         {
             var budgets = await _budgetRepository.GetBudgetsAsync(UserId);

@@ -9,7 +9,7 @@ namespace API.Constants.Identity
     {
         public const string RequireAdminRole = "RequireAdminRole";
         public const string RequireUserRole = "RequireUserRole";
-        public const string RequireUserOrAdminRole = "RequireUserRole";
+        public const string RequireUserOrAdminRole = "RequireUserOrAdminRole";
     }
 
     public class Role
