@@ -27,17 +27,15 @@ namespace API.Data.Repositories
             budgetType.Deleted = true;
         }
 
-        public async Task<BudgetType> GetBudgetTypeByIdAsync(int id)
+        public async Task<BudgetType> GetBudgetTypeByIdAsync(int id, bool includeDeleted = false)
         {
-            return await _context.BudgetTypes
-                .Where(x => x.Deleted == false)
+            return await GetBudgetTypeBase(includeDeleted)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<IEnumerable<BudgetType>> GetBudgetTypesAsync()
+        public async Task<IEnumerable<BudgetType>> GetBudgetTypesAsync(bool includeDeleted = false)
         {
-            return await _context.BudgetTypes
-                .Where(x => x.Deleted == false)
+            return await GetBudgetTypeBase(includeDeleted)
                 .ToListAsync();
         }
 
@@ -49,6 +47,16 @@ namespace API.Data.Repositories
         public void Update(BudgetType budgetType)
         {
             _context.Entry(budgetType).State = EntityState.Modified;
+        }
+
+        private IQueryable<BudgetType> GetBudgetTypeBase(bool includeDeleted)
+        {
+            var budgetType = _context.BudgetTypes.AsQueryable();
+
+            if (includeDeleted is false)
+                budgetType = budgetType.Where(x => x.Deleted == false);
+
+            return budgetType;
         }
     }
 }

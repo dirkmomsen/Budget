@@ -1,4 +1,6 @@
-﻿using API.Entities.Identity;
+﻿using API.Constants.Identity;
+using API.DTOs;
+using API.Entities.Identity;
 using API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    [Authorize(Policy = "RequireAdminRole")]
+    [Authorize(Policy = Policy.RequireAdminRole)]
     public class AdminController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
@@ -27,11 +29,25 @@ namespace API.Controllers
 
         
         [HttpGet("users")]
-        public async Task<ActionResult> GetUsersWithRoles()
+        public async Task<IActionResult> GetUsersWithRoles()
         {
-            var users = await _userManager.GetUsersWithRolesAsync(_mapper); 
-            
-            return Ok(users);
+            var users = await _userManager
+                .GetUsersWithRolesAsync();
+
+            var output = users.Select(u => _mapper.Map<UserWithRoleDto>(u));
+
+            return Ok(output);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserWithRoles(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+                return NotFound("Could not find user");
+
+            return Ok(user);
         }
 
         [HttpPost("users/{username}")]

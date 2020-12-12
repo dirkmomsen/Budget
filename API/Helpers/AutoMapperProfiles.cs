@@ -27,16 +27,15 @@ namespace API.Helpers
 
             CreateMap<Budget, BudgetDto>()
                 .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.UserBudgets));
-            CreateMap<BudgetDto, Budget>();
+            CreateMap<CreateBudgetDto, Budget>();
 
             CreateMap<AppUserBudget, UserDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId));
-            CreateMap<UserDto, AppUserBudget>();
-
-            CreateMap<CreateBudgetDto, Budget>();
+            CreateMap<UserDto, AppUserBudget>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id)); ;
 
             CreateMap<BudgetType, BudgetTypeDto>();
-            CreateMap<BudgetTypeDto, BudgetType>();
+            CreateMap<CreateBudgetTypeDto, BudgetType>();
         }
     }
 }

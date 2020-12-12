@@ -12,13 +12,12 @@ namespace API.Extensions
 {
     public static class UserManagerExtensions
     {
-        public static async Task<List<UserWithRoleDto>> GetUsersWithRolesAsync(this UserManager<AppUser> userManager, IMapper mapper)
+        public static async Task<IEnumerable<AppUser>> GetUsersWithRolesAsync(this UserManager<AppUser> userManager)
         {
             return await userManager.Users
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .OrderBy(u => u.UserName)
-                .Select(u => mapper.Map<UserWithRoleDto>(u))
                 .ToListAsync();
 
             //return await userManager.Users

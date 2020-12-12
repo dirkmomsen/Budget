@@ -27,15 +27,15 @@ namespace API.Data.Repositories
             budget.Deleted = true;
         }
 
-        public async Task<Budget> GetBudgetByIdAsync(int id, int userId)
+        public async Task<Budget> GetBudgetByIdAsync(int id, int userId, bool includeDeleted = false)
         {
-            return await GetBudgetsBase(userId)
+            return await GetBudgetsBase(userId, includeDeleted)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public async Task<IEnumerable<Budget>> GetBudgetsAsync(int userId)
+        public async Task<IEnumerable<Budget>> GetBudgetsAsync(int userId, bool includeDeleted = false)
         {
-            return await GetBudgetsBase(userId)
+            return await GetBudgetsBase(userId, includeDeleted)
                 .ToListAsync();
         }
 
@@ -49,12 +49,16 @@ namespace API.Data.Repositories
             _context.Entry(budget).State = EntityState.Modified;
         }
 
-        private IQueryable<Budget> GetBudgetsBase(int userId)
+        private IQueryable<Budget> GetBudgetsBase(int userId, bool includeDeleted)
         {
-            return _context.Budgets
+            var budgets = _context.Budgets
                             .Include(b => b.UserBudgets)
-                            .Where(b => b.UserBudgets.Any(u => u.UserId == userId))
-                            .Where(b => b.Deleted == false);
+                            .Where(b => b.UserBudgets.Any(u => u.UserId == userId));
+
+            if (includeDeleted is false)
+                budgets = budgets.Where(x => x.Deleted == false);
+
+            return budgets;
         }
     }
 }

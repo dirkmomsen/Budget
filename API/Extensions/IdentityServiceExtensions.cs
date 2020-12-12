@@ -1,4 +1,5 @@
-﻿using API.Data;
+﻿using API.Constants.Identity;
+using API.Data;
 using API.Entities.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -43,7 +44,9 @@ namespace API.Extensions
 
             services.AddAuthorization(opt =>
             {
-                opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                opt.AddPolicy(Policy.RequireAdminRole, policy => policy.RequireRole(Role.Administrator));
+                opt.AddPolicy(Policy.RequireUserRole, policy => policy.RequireRole(Role.User));
+                opt.AddPolicy(Policy.RequireUserOrAdminRole, policy => policy.RequireRole(Role.Administrator, Role.User));
             });
 
             return services;

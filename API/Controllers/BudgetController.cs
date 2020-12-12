@@ -1,4 +1,5 @@
-﻿using API.Data;
+﻿using API.Constants.Identity;
+using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = Policy.RequireUserRole)]
     public class BudgetController : BaseApiController
     {
         private readonly IBudgetRepository _budgetRepository;
@@ -40,6 +41,7 @@ namespace API.Controllers
 
         // GET: api/<BudgetController>
         [HttpGet]
+        [Authorize(Policy = Policy.RequireUserRole)]
         public async Task<IActionResult> Get()
         {
             var budgets = await _budgetRepository.GetBudgetsAsync(UserId);
@@ -54,7 +56,7 @@ namespace API.Controllers
         {
             var budget = await _budgetRepository.GetBudgetByIdAsync(id, UserId);
 
-            if (budget == null)
+            if (budget is null)
                 return NotFound("Budget not found for this user");
 
             var output = _mapper.Map<BudgetDto>(budget);
@@ -80,9 +82,7 @@ namespace API.Controllers
             });
 
             _budgetRepository.AddBudget(budget);
-            var saved = await _budgetRepository.SaveAllAsync();
-
-            if (saved is false) return BadRequest("Failed to save budget");
+            await _budgetRepository.SaveAllAsync();
 
             var output = _mapper.Map<BudgetDto>(budget);
 
@@ -97,19 +97,18 @@ namespace API.Controllers
             var budgetType = await _budgetTypeRepository.GetBudgetTypeByIdAsync(budgetDto.TypeId);
 
             if (budgetType is null)
-                return BadRequest("Invalid budget type");
+                return NotFound("BudgetType does not exist");
 
             var budget = await _budgetRepository.GetBudgetByIdAsync(id, UserId);
 
-            if (budget is null) return NotFound();
+            if (budget is null) return NotFound("Budget does not exist");
 
-            budget.Name = budgetDto.Name;
-            budget.TypeId = budgetDto.TypeId;
+            _mapper.Map(budgetDto, budget);
 
             _budgetRepository.UpdateBudget(budget);
             var saved = await _budgetRepository.SaveAllAsync();
 
-            if (saved is false) return BadRequest("Failed to save budget");
+            if (saved is false) return BadRequest("Failed to save Budget");
 
             var output = _mapper.Map<BudgetDto>(budget);
 

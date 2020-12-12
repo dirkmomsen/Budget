@@ -1,4 +1,5 @@
-﻿using API.Entities;
+﻿using API.Constants.Identity;
+using API.Entities;
 using API.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,8 +23,8 @@ namespace API.Data
 
             var roles = new List<AppRole>
             {
-                new AppRole{ Name = "Admin" },
-                new AppRole{ Name = "User" }
+                new AppRole{ Name = Role.Administrator },
+                new AppRole{ Name = Role.User }
             };
 
             foreach (var role in roles)
@@ -35,7 +36,7 @@ namespace API.Data
             {
                 user.UserName = user.UserName.ToLower();
                 await userManager.CreateAsync(user, "Pa$$w0rd");
-                await userManager.AddToRoleAsync(user, "User");
+                await userManager.AddToRoleAsync(user, Role.User);
             }
 
             var admin = new AppUser
@@ -45,7 +46,7 @@ namespace API.Data
             };
 
             await userManager.CreateAsync(admin, "Pa$$w0rd");
-            await userManager.AddToRolesAsync(admin, new[] { "Admin" });
+            await userManager.AddToRolesAsync(admin, new[] { Role.Administrator });
         }
 
         public static async Task SeedBudgetTypes(DataContext context)
