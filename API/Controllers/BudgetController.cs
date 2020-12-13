@@ -67,6 +67,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateBudgetDto budgetDto)
         {
+            //this should move to a validation filter
             var budgetType = await _budgetTypeRepository.GetBudgetTypeByIdAsync(budgetDto.TypeId);
 
             if (budgetType is null)
