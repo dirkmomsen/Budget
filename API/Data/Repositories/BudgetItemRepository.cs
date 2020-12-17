@@ -29,18 +29,21 @@ namespace API.Data.Repositories
 
         public async Task<BudgetItem> GetBudgetItemByIdAsync(int id, int budgetId, bool includeDeleted = false)
         {
-            return await GetBudgetItemBase(id, budgetId, includeDeleted)
+            return await GetBudgetItemBase(budgetId, includeDeleted)
                 .FirstOrDefaultAsync(bi => bi.Id == id);
         }
 
-        public Task<IEnumerable<BudgetItem>> GetBudgetItemsAsync(int budgetId, bool includeDeleted = false)
+        public async Task<IEnumerable<BudgetItem>> GetBudgetItemsAsync(int budgetId, bool includeDeleted = false)
         {
-            throw new NotImplementedException();
+            return await GetBudgetItemBase(budgetId, includeDeleted)
+                .ToListAsync();
         }
 
-        public Task<IEnumerable<BudgetItem>> GetBudgetItemsByTypeAsync(int budgetId, int itemType, bool includeDeleted = false)
+        public async Task<IEnumerable<BudgetItem>> GetBudgetItemsByTypeAsync(int budgetId, int itemTypeId, bool includeDeleted = false)
         {
-            throw new NotImplementedException();
+            return await GetBudgetItemBase(budgetId, includeDeleted)
+                .Where(bi => bi.TypeId == itemTypeId)
+                .ToListAsync();
         }
 
         public async Task<bool> SaveAllAsync()
@@ -53,7 +56,7 @@ namespace API.Data.Repositories
             _context.Entry(budgetItem).State = EntityState.Modified;
         }
 
-        private IQueryable<BudgetItem> GetBudgetItemBase(int id, int budgetId, bool includeDeleted)
+        private IQueryable<BudgetItem> GetBudgetItemBase(int budgetId, bool includeDeleted)
         {
             var budgetTypeBase = _context.BudgetItems
                             .Where(bi => bi.BudgetId == budgetId);

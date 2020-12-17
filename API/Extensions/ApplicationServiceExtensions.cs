@@ -21,6 +21,7 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IBudgetRepository, BudgetRepository>();
             services.AddScoped<IBudgetTypeRepository, BudgetTypeRepository>();
+            services.AddScoped<IBudgetItemRepository, BudgetItemRepository>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddDbContext<DataContext>(options =>
             {
