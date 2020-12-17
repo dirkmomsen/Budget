@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace API.Interfaces
 {
-    interface IItemTypeRepository
+    public interface IItemTypeRepository
     {
         Task<bool> SaveAllAsync();
         Task<IEnumerable<ItemType>> GetBudgetTypesAsync(bool includeDeleted = false);
