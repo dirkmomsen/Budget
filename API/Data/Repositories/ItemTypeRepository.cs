@@ -1,5 +1,6 @@
 ﻿using API.Entities;
 using API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,34 +10,53 @@ namespace API.Data.Repositories
 {
     public class ItemTypeRepository : IItemTypeRepository
     {
+        private readonly DataContext _context;
+
+        public ItemTypeRepository(DataContext context)
+        {
+            _context = context;
+        }
+
         public void Add(ItemType itemType)
         {
-            throw new NotImplementedException();
+            _context.ItemTypes.Add(itemType);
         }
 
         public void Delete(ItemType itemType)
         {
-            throw new NotImplementedException();
+            itemType.Deleted = true;
         }
 
-        public Task<ItemType> GetBudgetTypeByIdAsync(int id, bool includeDeleted = false)
+        public async Task<ItemType> GetBudgetTypeByIdAsync(int id, bool includeDeleted = false)
         {
-            throw new NotImplementedException();
+            return await GetItemTypesBase(includeDeleted)
+                .FirstOrDefaultAsync(bt => bt.Id == id);
         }
 
-        public Task<IEnumerable<ItemType>> GetBudgetTypesAsync(bool includeDeleted = false)
+        public async Task<IEnumerable<ItemType>> GetBudgetTypesAsync(bool includeDeleted = false)
         {
-            throw new NotImplementedException();
+            return await GetItemTypesBase(includeDeleted)
+                .ToListAsync();
         }
 
-        public Task<bool> SaveAllAsync()
+        public async Task<bool> SaveAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public void Update(ItemType itemType)
         {
-            throw new NotImplementedException();
+            _context.Entry(itemType).State = EntityState.Modified;
+        }
+
+        private IQueryable<ItemType> GetItemTypesBase(bool includeDeleted)
+        {
+            var budgetTypes = _context.ItemTypes.AsQueryable();
+
+            if (includeDeleted is false)
+                budgetTypes = budgetTypes.Where(bt => bt.Deleted == false);
+
+            return budgetTypes;
         }
     }
 }
