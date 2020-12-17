@@ -41,6 +41,7 @@ namespace API.Controllers
 
         // POST api/<ItemTypeController>
         [HttpPost]
+        [Authorize(Policy = Policy.RequireAdminRole)]
         public async Task<IActionResult> Post([FromBody] CreateItemTypeDto itemTypeDto)
         {
             return Created($"itemType/{itemTypeDto.Name}", itemTypeDto);
@@ -48,6 +49,7 @@ namespace API.Controllers
 
         // PUT api/<ItemTypeController>/5
         [HttpPut("{id}")]
+        [Authorize(Policy = Policy.RequireAdminRole)]
         public async Task<IActionResult> Put(int id, [FromBody] CreateItemTypeDto itemTypeDto)
         {
             return Ok(itemTypeDto);
@@ -55,6 +57,7 @@ namespace API.Controllers
 
         // DELETE api/<ItemTypeController>/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = Policy.RequireAdminRole)]
         public async Task<IActionResult> Delete(int id)
         {
             return NoContent();
