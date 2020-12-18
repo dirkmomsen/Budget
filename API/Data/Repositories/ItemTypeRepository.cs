@@ -27,13 +27,13 @@ namespace API.Data.Repositories
             itemType.Deleted = true;
         }
 
-        public async Task<ItemType> GetBudgetTypeByIdAsync(int id, bool includeDeleted = false)
+        public async Task<ItemType> GetItemTypeByIdAsync(int id, bool includeDeleted = false)
         {
             return await GetItemTypesBase(includeDeleted)
                 .FirstOrDefaultAsync(bt => bt.Id == id);
         }
 
-        public async Task<IEnumerable<ItemType>> GetBudgetTypesAsync(bool includeDeleted = false)
+        public async Task<IEnumerable<ItemType>> GetItemTypesAsync(bool includeDeleted = false)
         {
             return await GetItemTypesBase(includeDeleted)
                 .ToListAsync();

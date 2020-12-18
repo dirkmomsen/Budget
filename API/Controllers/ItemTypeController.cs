@@ -1,5 +1,6 @@
 ﻿using API.Constants.Identity;
 using API.DTOs;
+using API.Entities;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -29,14 +30,25 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok();
+            var itemTypes = await _itemTypeRepository.GetItemTypesAsync();
+
+            var output = itemTypes.Select(it => _mapper.Map<ItemTypeDto>(it));
+
+            return Ok(output);
         }
 
         // GET api/<ItemTypeController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            return Ok();
+            var itemType = await _itemTypeRepository.GetItemTypeByIdAsync(id);
+
+            if (itemType is null)
+                return NotFound("ItemType does not exist");
+
+            var output = _mapper.Map<ItemTypeDto>(itemType);
+
+            return Ok(output);
         }
 
         // POST api/<ItemTypeController>
@@ -44,7 +56,14 @@ namespace API.Controllers
         [Authorize(Policy = Policy.RequireAdminRole)]
         public async Task<IActionResult> Post([FromBody] CreateItemTypeDto itemTypeDto)
         {
-            return Created($"itemType/{itemTypeDto.Name}", itemTypeDto);
+            var itemType = _mapper.Map<ItemType>(itemTypeDto);
+
+            _itemTypeRepository.Add(itemType);
+            await _itemTypeRepository.SaveAllAsync();
+
+            var output = _mapper.Map<ItemTypeDto>(itemType);
+
+            return Created($"itemType/{itemType.Id}", output);
         }
 
         // PUT api/<ItemTypeController>/5
@@ -52,6 +71,8 @@ namespace API.Controllers
         [Authorize(Policy = Policy.RequireAdminRole)]
         public async Task<IActionResult> Put(int id, [FromBody] CreateItemTypeDto itemTypeDto)
         {
+
+
             return Ok(itemTypeDto);
         }
 

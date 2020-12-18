@@ -36,6 +36,9 @@ namespace API.Helpers
 
             CreateMap<BudgetType, BudgetTypeDto>();
             CreateMap<CreateBudgetTypeDto, BudgetType>();
+
+            CreateMap<ItemType, ItemTypeDto>();
+            CreateMap<CreateItemTypeDto, ItemType>();
         }
     }
 }
