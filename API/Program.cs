@@ -31,6 +31,7 @@ namespace API
                 await Seed.SeedUsers(userManager, roleManager);
                 await Seed.SeedBudgetTypes(context);
                 await Seed.SeedItemTypes(context);
+                await Seed.SeedIntervals(context);
                 await Seed.SeedBudgets(context, userManager);
             }
             catch (Exception ex)

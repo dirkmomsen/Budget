@@ -81,6 +81,31 @@ namespace API.Data
             await context.SaveChangesAsync();
         }
 
+        public static async Task SeedIntervals(DataContext context)
+        {
+            if (await context.Intervals.AnyAsync()) return;
+
+            await context.Intervals.AddAsync(new()
+            {
+                Name = "Weekly",
+                Length = new DateTime().AddDays(7)
+            });
+
+            await context.Intervals.AddAsync(new()
+            {
+                Name = "Fortnightly",
+                Length = new DateTime().AddDays(14)
+            });
+
+            await context.Intervals.AddAsync(new()
+            {
+                Name = "Monthly",
+                Length = new DateTime().AddMonths(1)
+            });
+
+            await context.SaveChangesAsync();
+        }
+
         public static async Task SeedItemTypes(DataContext context)
         {
             if (await context.ItemTypes.AnyAsync()) return;
@@ -119,6 +144,7 @@ namespace API.Data
             var budgetTypes = await context.BudgetTypes.ToListAsync();
             var itemTypes = await context.ItemTypes.ToListAsync();
             var users = await userManager.Users.ToListAsync();
+            var intervals = await context.Intervals.ToListAsync();
 
             var budgetCount = users.Count;
 
@@ -136,11 +162,12 @@ namespace API.Data
                     {
                         Type = itemTypes[rnd.Next(0, itemTypes.Count - 1)],
                         Description = $"Random Item {o}",
-                        Value = Convert.ToDecimal(rnd.NextDouble() * 10000)
+                        Value = Convert.ToDecimal(rnd.NextDouble() * 10000),
+                        Interval = intervals[rnd.Next(0, intervals.Count - 1)]
                     });
                 }
 
-                AppUserBudget test = new()
+                AppUserBudget user = new()
                 {
                     User = users[i],
                     Administrator = true
@@ -152,7 +179,8 @@ namespace API.Data
                     Type = budgetTypes[randomBudgetType],
                     Items = items,
                     //Users = new List<AppUser>() { users[i] },
-                    UserBudgets = new List<AppUserBudget>() { test }
+                    UserBudgets = new List<AppUserBudget>() { user },
+                    Interval = intervals[rnd.Next(0, intervals.Count - 1)]
                 });
             }
 
@@ -164,15 +192,18 @@ namespace API.Data
                     new() {
                         Type = itemTypes[rnd.Next(0, itemTypes.Count - 1)],
                         Description = $"Extra budget item",
-                        Value = Convert.ToDecimal(rnd.NextDouble() * 10000)
+                        Value = Convert.ToDecimal(rnd.NextDouble() * 10000),
+                        Interval = intervals[rnd.Next(0, intervals.Count - 1)]
                     },
                     new() {
                         Type = itemTypes[rnd.Next(0, itemTypes.Count - 1)],
                         Description = $"Second extra budget item",
-                        Value = Convert.ToDecimal(rnd.NextDouble() * 10000)
+                        Value = Convert.ToDecimal(rnd.NextDouble() * 10000),
+                        Interval = intervals[rnd.Next(0, intervals.Count - 1)]
                     }
                 },
-                Users = new List<AppUser>() { users[0] }
+                Users = new List<AppUser>() { users[0] },
+                Interval = intervals[rnd.Next(0, intervals.Count - 1)]
             });
 
             await context.Budgets.AddRangeAsync(budgets);

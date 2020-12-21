@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 
 namespace API.Entities
 {
-    public class Period : BaseEntity
+    public class Interval : BaseEntity
     {
         public string Name { get; set; }
-        public int Days { get; set; }
+        public DateTime Length { get; set; }
 
         public ICollection<BudgetItem> Items { get; set; }
 
         public ICollection<Budget> Budgets { get; set; }
 
-        public Period()
+        public Interval()
         {
             Items = new List<BudgetItem>();
             Budgets = new List<Budget>();

@@ -13,7 +13,7 @@ namespace API.Data
         public DbSet<BudgetItem> BudgetItems { get; set; }
         public DbSet<ItemType> ItemTypes { get; set; }
 
-        public DbSet<Period> Periods { get; set; }
+        public DbSet<Interval> Intervals { get; set; }
 
         public DataContext(DbContextOptions options) : base(options)
         {
@@ -65,9 +65,9 @@ namespace API.Data
                 .OnDelete(DeleteBehavior.SetNull);
 
             builder.Entity<Budget>()
-                .HasOne(b => b.Period)
+                .HasOne(b => b.Interval)
                 .WithMany(per => per.Budgets)
-                .HasForeignKey(b => b.PeriodId)
+                .HasForeignKey(b => b.IntervalId)
                 .OnDelete(DeleteBehavior.SetNull);
 
             builder.Entity<BudgetItem>()
@@ -77,9 +77,9 @@ namespace API.Data
                 .OnDelete(DeleteBehavior.SetNull);
 
             builder.Entity<BudgetItem>()
-                .HasOne(bi => bi.Period)
+                .HasOne(bi => bi.Interval)
                 .WithMany(per => per.Items)
-                .HasForeignKey(bi => bi.PeriodId)
+                .HasForeignKey(bi => bi.IntervalId)
                 .OnDelete(DeleteBehavior.SetNull);
             
         }

@@ -15,8 +15,8 @@ namespace API.Entities
         public int TypeId { get; set; }
         public BudgetType Type { get; set; }
 
-        public int PeriodId { get; set; }
-        public Period Period { get; set; }
+        public int IntervalId { get; set; }
+        public Interval Interval { get; set; }
 
         public ICollection<BudgetItem> Items { get; set; }
 

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace API.Data.Migrations
 {
-    public partial class BudgetTables : Migration
+    public partial class Budgets : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,6 +39,23 @@ namespace API.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Intervals",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Length = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
+                    Deleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Intervals", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ItemTypes",
                 columns: table => new
                 {
@@ -63,6 +80,7 @@ namespace API.Data.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     TypeId = table.Column<int>(type: "INTEGER", nullable: false),
+                    IntervalId = table.Column<int>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     Deleted = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -74,6 +92,12 @@ namespace API.Data.Migrations
                         name: "FK_Budgets_BudgetTypes_TypeId",
                         column: x => x.TypeId,
                         principalTable: "BudgetTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Budgets_Intervals_IntervalId",
+                        column: x => x.IntervalId,
+                        principalTable: "Intervals",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                 });
@@ -113,6 +137,7 @@ namespace API.Data.Migrations
                     Value = table.Column<decimal>(type: "TEXT", nullable: false),
                     TypeId = table.Column<int>(type: "INTEGER", nullable: false),
                     BudgetId = table.Column<int>(type: "INTEGER", nullable: false),
+                    IntervalId = table.Column<int>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     Deleted = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -126,6 +151,12 @@ namespace API.Data.Migrations
                         principalTable: "Budgets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BudgetItems_Intervals_IntervalId",
+                        column: x => x.IntervalId,
+                        principalTable: "Intervals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_BudgetItems_ItemTypes_TypeId",
                         column: x => x.TypeId,
@@ -145,9 +176,19 @@ namespace API.Data.Migrations
                 column: "BudgetId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BudgetItems_IntervalId",
+                table: "BudgetItems",
+                column: "IntervalId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BudgetItems_TypeId",
                 table: "BudgetItems",
                 column: "TypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Budgets_IntervalId",
+                table: "Budgets",
+                column: "IntervalId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Budgets_TypeId",
@@ -171,6 +212,9 @@ namespace API.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "BudgetTypes");
+
+            migrationBuilder.DropTable(
+                name: "Intervals");
 
             migrationBuilder.DropColumn(
                 name: "CreatedAt",

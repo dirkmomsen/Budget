@@ -46,11 +46,11 @@ namespace API.Data.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("IntervalId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("PeriodId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("TypeId")
                         .HasColumnType("INTEGER");
@@ -60,7 +60,7 @@ namespace API.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PeriodId");
+                    b.HasIndex("IntervalId");
 
                     b.HasIndex("TypeId");
 
@@ -85,7 +85,7 @@ namespace API.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PeriodId")
+                    b.Property<int>("IntervalId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("TypeId")
@@ -101,7 +101,7 @@ namespace API.Data.Migrations
 
                     b.HasIndex("BudgetId");
 
-                    b.HasIndex("PeriodId");
+                    b.HasIndex("IntervalId");
 
                     b.HasIndex("TypeId");
 
@@ -247,6 +247,32 @@ namespace API.Data.Migrations
                     b.ToTable("AspNetUserRoles");
                 });
 
+            modelBuilder.Entity("API.Entities.Interval", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Length")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Intervals");
+                });
+
             modelBuilder.Entity("API.Entities.ItemType", b =>
                 {
                     b.Property<int>("Id")
@@ -271,32 +297,6 @@ namespace API.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ItemTypes");
-                });
-
-            modelBuilder.Entity("API.Entities.Period", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Days")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Periods");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -404,9 +404,9 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Entities.Budget", b =>
                 {
-                    b.HasOne("API.Entities.Period", "Period")
+                    b.HasOne("API.Entities.Interval", "Interval")
                         .WithMany("Budgets")
-                        .HasForeignKey("PeriodId")
+                        .HasForeignKey("IntervalId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
@@ -416,7 +416,7 @@ namespace API.Data.Migrations
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
-                    b.Navigation("Period");
+                    b.Navigation("Interval");
 
                     b.Navigation("Type");
                 });
@@ -429,9 +429,9 @@ namespace API.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.Period", "Period")
+                    b.HasOne("API.Entities.Interval", "Interval")
                         .WithMany("Items")
-                        .HasForeignKey("PeriodId")
+                        .HasForeignKey("IntervalId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
@@ -443,7 +443,7 @@ namespace API.Data.Migrations
 
                     b.Navigation("Budget");
 
-                    b.Navigation("Period");
+                    b.Navigation("Interval");
 
                     b.Navigation("Type");
                 });
@@ -527,15 +527,15 @@ namespace API.Data.Migrations
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("API.Entities.ItemType", b =>
-                {
-                    b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("API.Entities.Period", b =>
+            modelBuilder.Entity("API.Entities.Interval", b =>
                 {
                     b.Navigation("Budgets");
 
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("API.Entities.ItemType", b =>
+                {
                     b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
