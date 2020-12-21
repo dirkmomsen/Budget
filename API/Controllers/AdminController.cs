@@ -39,7 +39,7 @@ namespace API.Controllers
             return Ok(output);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("users/{username}")]
         public async Task<IActionResult> GetUserWithRoles(string username)
         {
             var user = await _userManager.FindByNameAsync(username);
@@ -47,7 +47,9 @@ namespace API.Controllers
             if (user == null)
                 return NotFound("Could not find user");
 
-            return Ok(user);
+            var output = _mapper.Map<UserWithRoleDto>(user);
+
+            return Ok(output);
         }
 
         [HttpPost("users/{username}")]
