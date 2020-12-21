@@ -74,7 +74,7 @@ namespace API.Controllers
             var itemType = await _itemTypeRepository.GetItemTypeByIdAsync(id);
 
             if (itemType is null)
-                NotFound("BudgetType does not exist");
+                return NotFound("BudgetType does not exist");
 
             _mapper.Map(itemTypeDto, itemType);
 
@@ -84,7 +84,7 @@ namespace API.Controllers
             if (saved is false)
                 return BadRequest("Failed to save ItemType");
 
-            var output = _mapper.Map<BudgetTypeDto>(itemType);
+            var output = _mapper.Map<ItemTypeDto>(itemType);
 
             return Ok(output);
         }
@@ -94,6 +94,14 @@ namespace API.Controllers
         [Authorize(Policy = Policy.RequireAdminRole)]
         public async Task<IActionResult> Delete(int id)
         {
+            var itemType = await _itemTypeRepository.GetItemTypeByIdAsync(id);
+
+            if (itemType is null)
+                return NotFound("BudgetType does not exist");
+
+            _itemTypeRepository.Delete(itemType);
+            var saved = _itemTypeRepository.SaveAllAsync();
+
             return NoContent();
         }
     }
