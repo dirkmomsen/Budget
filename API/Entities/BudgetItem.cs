@@ -16,5 +16,8 @@ namespace API.Entities
 
         public int BudgetId { get; set; }
         public Budget Budget { get; set; }
+
+        public int PeriodId { get; set; }
+        public Period Period { get; set; }
     }
 }

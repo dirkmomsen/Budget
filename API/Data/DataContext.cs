@@ -13,6 +13,8 @@ namespace API.Data
         public DbSet<BudgetItem> BudgetItems { get; set; }
         public DbSet<ItemType> ItemTypes { get; set; }
 
+        public DbSet<Period> Periods { get; set; }
+
         public DataContext(DbContextOptions options) : base(options)
         {
         }
@@ -62,13 +64,23 @@ namespace API.Data
                 .HasForeignKey(b => b.TypeId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            builder.Entity<Budget>()
+                .HasOne(b => b.Period)
+                .WithMany(per => per.Budgets)
+                .HasForeignKey(b => b.PeriodId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             builder.Entity<BudgetItem>()
                 .HasOne(bi => bi.Type)
                 .WithMany(bit => bit.Items)
                 .HasForeignKey(bi => bi.TypeId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-
+            builder.Entity<BudgetItem>()
+                .HasOne(bi => bi.Period)
+                .WithMany(per => per.Items)
+                .HasForeignKey(bi => bi.PeriodId)
+                .OnDelete(DeleteBehavior.SetNull);
             
         }
     }
