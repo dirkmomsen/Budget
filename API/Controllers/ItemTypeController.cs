@@ -74,7 +74,7 @@ namespace API.Controllers
             var itemType = await _itemTypeRepository.GetItemTypeByIdAsync(id);
 
             if (itemType is null)
-                return NotFound("BudgetType does not exist");
+                return NotFound("ItemType does not exist");
 
             _mapper.Map(itemTypeDto, itemType);
 
@@ -97,7 +97,7 @@ namespace API.Controllers
             var itemType = await _itemTypeRepository.GetItemTypeByIdAsync(id);
 
             if (itemType is null)
-                return NotFound("BudgetType does not exist");
+                return NotFound("ItemType does not exist");
 
             _itemTypeRepository.Delete(itemType);
             var saved = _itemTypeRepository.SaveAllAsync();
