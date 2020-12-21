@@ -71,9 +71,22 @@ namespace API.Controllers
         [Authorize(Policy = Policy.RequireAdminRole)]
         public async Task<IActionResult> Put(int id, [FromBody] CreateItemTypeDto itemTypeDto)
         {
+            var itemType = await _itemTypeRepository.GetItemTypeByIdAsync(id);
 
+            if (itemType is null)
+                NotFound("BudgetType does not exist");
 
-            return Ok(itemTypeDto);
+            _mapper.Map(itemTypeDto, itemType);
+
+            _itemTypeRepository.Update(itemType);
+            var saved = await _itemTypeRepository.SaveAllAsync();
+
+            if (saved is false)
+                return BadRequest("Failed to save ItemType");
+
+            var output = _mapper.Map<BudgetTypeDto>(itemType);
+
+            return Ok(output);
         }
 
         // DELETE api/<ItemTypeController>/5
